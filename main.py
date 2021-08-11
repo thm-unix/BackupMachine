@@ -12,6 +12,9 @@ from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
 
 os.environ['QT_STYLE_OVERRIDE'] = 'fusion'
+main_dir = os.path.abspath(__file__)[:-7]
+os.chdir(main_dir)
+
 
 class appInfo(Enum):
     _DEVELOPER = 'thm'
