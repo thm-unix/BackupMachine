@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Backup Machine
+Type=Application
+Terminal=false
+Icon=/home/thm/software/BackupMachine/assets/light_icon.png
+Exec=/home/thm/software/BackupMachine/main.py
