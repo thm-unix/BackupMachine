@@ -1,4 +1,5 @@
 # Backup Machine
+<img src="repo_assets/light_icon.png" width="15%" height="15%">
 A simple program for backing up your files
 
 ## Description
@@ -15,3 +16,4 @@ This is a Python application which can pack/unpack .tar files. The main feature 
 
 ## Screenshots
 <img src="repo_assets/light.png" width="40%" height="40%"> <img src="repo_assets/dark.png" width="40%" height="40%">
+<img src="repo_assets/settings.png" width="40%" height="40%"> <img src="repo_assets/about.png" width="24%" height="24%">
