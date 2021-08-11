@@ -14,3 +14,5 @@ This is a Python application which can pack/unpack .tar files. The main feature 
 7. sudo cp backupmachine.desktop /usr/share/applications/
 
 ## Screenshots
+<img src="repo_assets/light.png">
+<img src="repo_assets/dark.png"
