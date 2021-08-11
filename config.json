@@ -1,1 +1,5 @@
-{"locale": "us", "theme": "dark", "bgrObject": "assets/background.jpg"}
+{
+  "locale": "us",
+  "theme": "dark",
+  "bgrObject": "assets/background.jpg"
+}
