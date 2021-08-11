@@ -1,0 +1,25 @@
+QWidget {
+  background-color: #e5e5e5;
+  color: #000000;
+}
+
+QLabel {
+  color: #000000;
+}
+
+QLabel#appNameLabel {
+  font-size: 20px;
+}
+
+QLabel#appVersionLabel {
+  font-size: 15px;
+}
+
+QPushButton,QCheckBox {
+  color: #000000;
+}
+
+QLineEdit,QListWidget {
+  background-color: #d5d5d5;
+  color: #000000;
+}
