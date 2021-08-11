@@ -166,7 +166,6 @@ class App(QWidget):
                         print(str(self.percentsCompleted) + '%')
 
                     tarWriter.close()
-                    QMessageBox.information(self, 'Backup Machine', self.txtData['completed_msgbox'], QMessageBox.Ok)
                     print('Process completed.')
                     self.saveBackupWindow.hide()
                     self.completionWindow.show()
@@ -206,7 +205,6 @@ class App(QWidget):
                     tarReader.extractall(self.restoreDirectory)
                     tarReader.close()
 
-                    print('Process completed.')
                     self.completionWindow.completedSuccessfullyLabel.setText(self.txtData['restoreCompletedSuccessfullyLabel'] + self.restoreDirectory)
                     self.restoreWindow.hide()
                     self.completionWindow.show()
@@ -233,7 +231,7 @@ class App(QWidget):
                                         str(currentDateTime.hour) + '-' + \
                                         str(currentDateTime.minute) + '-' + \
                                         str(currentDateTime.second) + '.tar'
-                    self.templateBackupFilename = self.templateData['name'] + self.nameTemplate
+                    self.templateBackupFilename = self.templateData['name'] + '-' + self.nameTemplate
                     self.templateBackupPath = self.templateData['savepath']
                     self.templateFilesQueue = deque()
                     self.templateFilesQueue += self.templateData['items']
@@ -253,9 +251,10 @@ class App(QWidget):
                         print(str(self.percentsCompleted) + '%')
 
                     tarWriter.close()
-                    QMessageBox.information(self, 'Backup Machine', self.txtData['completed_msgbox'], QMessageBox.Ok)
                     print('Process completed.')
-
+                    self.completionWindow.completedSuccessfullyLabel.setText(self.completionWindow.completedSuccessfullyLabel.text() + os.path.join(self.templateBackupPath, self.templateBackupFilename))
+                    self.useTemplateWindow.hide()
+                    self.completionWindow.show()
             else:
                 print('Unknown object ' + object + ' on form ' + form + ' (report this!)')
         elif form == 'settingsWindow':
