@@ -19,7 +19,7 @@ os.chdir(main_dir)
 class appInfo(Enum):
     _DEVELOPER = 'thm'
     _APPNAME   = 'Backup Machine'
-    _VERSION   = '0.1'
+    _VERSION   = '0.1.3'
     _CONTACT   = 'highsierra.2007@gmail.com'
     _WEBSITE   = 'https://github.com/thm-unix/'
 
