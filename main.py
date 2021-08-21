@@ -19,7 +19,7 @@ os.chdir(main_dir)
 class appInfo(Enum):
     _DEVELOPER = 'thm'
     _APPNAME   = 'Backup Machine'
-    _VERSION   = '0.1.3'
+    _VERSION   = '0.2'
     _CONTACT   = 'highsierra.2007@gmail.com'
     _WEBSITE   = 'https://github.com/thm-unix/'
 
@@ -131,7 +131,7 @@ class App(QWidget):
                 self.saveBackupWindow.hide()
                 self.createNewBackupWindow.show()
             elif object == 'startPushButton':
-                if self.saveBackupWindow.backupPathLineEdit.text() :
+                if self.saveBackupWindow.backupPathLineEdit.text():
                     self.saveBackupWindow.setWindowTitle(self.txtData['pleaseWait'])
                     self.saveBackupWindow.savingBackupTitleLabel.setText(self.txtData['progressTitleLabel'])
 
@@ -306,7 +306,59 @@ class App(QWidget):
         else:
             print('Unknown form: ' + form + ' (report this!)')
 
+    def useTemplateCLI(self, templatePath):
+        templatePath = 'templates/' + templatePath + '.json'
+        if os.path.exists(templatePath):
+            with open(templatePath) as templateReader:
+                templateData = json.load(templateReader)
+
+            currentDateTime = datetime.datetime.now()
+            nameTemplate = str(currentDateTime.year) + '-' + \
+                           str(currentDateTime.month) + '-' + \
+                           str(currentDateTime.day) + '_' + \
+                           str(currentDateTime.hour) + '-' + \
+                           str(currentDateTime.minute) + '-' + \
+                           str(currentDateTime.second) + '.tar'
+            templateBackupFilename = templateData['name'] + '-' + nameTemplate
+            templateBackupPath = templateData['savepath']
+            templateFilesQueue = deque()
+            templateFilesQueue += templateData['items']
+
+            completedItems = 0
+            templateCountItems = len(templateFilesQueue)
+
+            tarWriter = tarfile.open(os.path.join(templateBackupPath, templateBackupFilename), 'w')
+
+            while templateFilesQueue:
+                tarWriter.add(templateFilesQueue[0])
+                completedItems += 1
+                templateFilesQueue.popleft()
+
+                percentsCompleted = (completedItems * 100) // templateCountItems
+                print(str(percentsCompleted) + '%')
+
+            tarWriter.close()
+            print('Process completed.')
+        else:
+            print('No such template.')
+
     def init(self):
+        myArgs = sys.argv
+        print('Args: ' + ' '.join(myArgs))
+
+        if '-service' in myArgs:
+            if '-template' in myArgs:
+                if (len(myArgs)-1) == (myArgs.index('-template')+1):
+                    self.useTemplateCLI(myArgs[myArgs.index('-template')+1])
+                    exit()
+                else:
+                    print('Incorrect usage of arguments.')
+                    exit()
+            else:
+                print('Lack of arguments.')
+                exit()
+
+
         # Read config.json
         try:
             with open('config.json', 'r') as configReader:
