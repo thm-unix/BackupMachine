@@ -14,6 +14,11 @@ This is a Python application which can pack/unpack .tar files. The main feature 
 6. (Change the path to main.py in .desktop file)
 7. sudo cp backupmachine.desktop /usr/share/applications/
 
+## Daemonize
+Starting from v.0.1.4 you can create a daemon which can create backups automatically because now you can use one of your templates from CLI.<br>
+<b>Usage:</b>
+./main.py -service -template template_name
+
 ## Screenshots
 <img src="repo_assets/light.png" width="40%" height="40%"> <img src="repo_assets/dark.png" width="40%" height="40%">
 <img src="repo_assets/settings.png" width="40%" height="40%"> <img src="repo_assets/about.png" width="24%" height="24%">
