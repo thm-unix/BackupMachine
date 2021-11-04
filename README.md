@@ -19,6 +19,10 @@ Starting from v.0.1.4 you can create a daemon which can create backups automatic
 <b>Usage:</b>
 ./main.py -service -template template_name
 
+## CLI
+Now complete CLI mode! (v.0.2 and newer)<br>
+<img src="repo_assets/cli.png" width="50%" height="50%">
+
 ## Screenshots
 <img src="repo_assets/light.png" width="40%" height="40%"> <img src="repo_assets/dark.png" width="40%" height="40%">
 <img src="repo_assets/settings.png" width="40%" height="40%"> <img src="repo_assets/about.png" width="24%" height="24%">
