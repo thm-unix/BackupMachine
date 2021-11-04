@@ -12,7 +12,8 @@ from PyQt5.QtCore import QThread
 from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
 
-#os.environ['QT_STYLE_OVERRIDE'] = 'fusion'
+os.environ['QT_STYLE_OVERRIDE'] = 'fusion'
+
 main_dir = os.path.abspath(__file__)[:-7]
 os.chdir(main_dir)
 
@@ -20,7 +21,7 @@ os.chdir(main_dir)
 class appInfo(Enum):
     _DEVELOPER = 'thm'
     _APPNAME   = 'Backup Machine'
-    _VERSION   = '0.2'
+    _VERSION   = '0.2.1'
     _CONTACT   = 'highsierra.2007@mail.ru'
     _WEBSITE   = 'https://thm-unix.github.io/'
 
