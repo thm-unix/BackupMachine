@@ -19,6 +19,9 @@ This is a Python application which can pack/unpack .tar files. The main feature 
 <b>Russian: </b> 100% (by <a href="https://github.com/thm-unix/">thm-unix</a>) <br> 
 (here can be your locale)
 
+## Bugs
+Please report any bugs and suggestions.
+
 ## Daemonize
 Starting from v.0.1.4 you can create a daemon which can create backups automatically because now you can use one of your templates from CLI.<br>
 <b>Usage:</b>
