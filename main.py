@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import os, sys
+import shutil
 import json, tarfile
 import time
 import datetime
@@ -11,7 +12,7 @@ from PyQt5.QtCore import QThread
 from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
 
-os.environ['QT_STYLE_OVERRIDE'] = 'fusion'
+#os.environ['QT_STYLE_OVERRIDE'] = 'fusion'
 main_dir = os.path.abspath(__file__)[:-7]
 os.chdir(main_dir)
 
@@ -20,8 +21,8 @@ class appInfo(Enum):
     _DEVELOPER = 'thm'
     _APPNAME   = 'Backup Machine'
     _VERSION   = '0.2'
-    _CONTACT   = 'highsierra.2007@gmail.com'
-    _WEBSITE   = 'https://github.com/thm-unix/'
+    _CONTACT   = 'highsierra.2007@mail.ru'
+    _WEBSITE   = 'https://thm-unix.github.io/'
 
 
 class App(QWidget):
@@ -306,6 +307,157 @@ class App(QWidget):
         else:
             print('Unknown form: ' + form + ' (report this!)')
 
+    def showCLIMenu(self):
+        cmdInput = ''
+
+        print('Welcome to Backup Machine v.' + appInfo._VERSION.value + '!')
+        print('1> Create new backup')
+        print('2> Restore from backup')
+        print('3> Use template')
+        print('4> About')
+        print('5> Exit\n')
+
+        while not cmdInput in ['1', '2', '3', '4', '5']:
+            cmdInput = input('> ')
+            self.cliFilesToBackup = []
+
+        if cmdInput == '1':
+            cmdInput = ''
+
+            print('Specify files you want to add to the new backup.')
+            print('You can add file:             [FILE]/path/to/file')
+            print('And you can add a directory:  [DIR]/path/to/dir/')
+            print('End with pressing ^C')
+
+            try:
+                while True:
+                    cmdInput = input('> ')
+                    if cmdInput.startswith('[FILE]') and len(cmdInput[6:]) > 0 and \
+                       os.path.exists(cmdInput[6:]) and os.path.isfile(cmdInput[6:]):
+                        self.cliFilesToBackup += [cmdInput[6:]]
+                    elif cmdInput.startswith('[DIR]') and len(cmdInput[5:]) > 0 and \
+                       os.path.exists(cmdInput[5:]) and os.path.isdir(cmdInput[5:]):
+                        for file in os.scandir(cmdInput[5:]):
+                            self.cliFilesToBackup += [file.path]
+                    else:
+                        print('Incorrect path!')
+            except KeyboardInterrupt:
+                if len(self.cliFilesToBackup) > 0:
+                    pass
+                else:
+                    print('No files were added.')
+                    print()
+                    self.showCLIMenu()
+
+            cmdInput = ''
+            while cmdInput == '':
+                cmdInput = input('Specify name of the backup: ')
+
+            cliBackupName = cmdInput
+            '''currentDateTime = datetime.datetime.now()
+            nameTemplate = str(currentDateTime.year) + '-' + \
+                           str(currentDateTime.month) + '-' + \
+                           str(currentDateTime.day) + '_' + \
+                           str(currentDateTime.hour) + '-' + \
+                           str(currentDateTime.minute) + '-' + \
+                           str(currentDateTime.second) + '.tar
+            cliBackupFilename = cmdInput'''
+
+            cmdInput = ''
+            while cmdInput == '' or not(os.path.exists(cmdInput)):
+                cmdInput = input('Where to save the backup (directory): ')
+            cmdInput = cmdInput if cmdInput[-1] == '/' else cmdInput + '/'
+
+            self.cliBackupPath = cmdInput
+
+            cmdInput = ''
+            while not cmdInput in ['y', 'Y', 'n', 'N']:
+                cmdInput = input('Do you want to create a template for this backup? (y/n): ')[0]
+
+
+            cliTemplateData = {
+                'name': cliBackupName,
+                'savepath': self.cliBackupPath,
+                'items': self.cliFilesToBackup
+            }
+            cliTemplatePath = 'templates/temp.json'
+
+            with open(cliTemplatePath, 'w') as cliTemplateWriter:
+                json.dump(cliTemplateData, cliTemplateWriter)
+
+
+            if cmdInput in ['y', 'Y']:
+                shutil.copyfile('templates/temp.json', 'templates/' + cliBackupName + '.json')
+
+            self.useTemplateCLI('temp')
+            os.remove('templates/temp.json')
+
+            print()
+            self.showCLIMenu()
+
+        elif cmdInput == '2':
+            cmdInput = ''
+            while cmdInput == '' or not(os.path.exists(cmdInput)) or \
+                not(os.path.isfile(cmdInput)):
+                cmdInput = input('Specify path to *.tar backup: ')
+
+            cliTarFilename = cmdInput
+
+            cmdInput = ''
+            while cmdInput == '' or not(os.path.exists(cmdInput)) or \
+                not(os.path.isdir(cmdInput)):
+                cmdInput = input('Where to unpack *.tar: ')
+
+            cliUnpackPath = cmdInput
+
+            cliTarReader = tarfile.open(cliTarFilename)
+            cliTarReader.extractall(cliUnpackPath)
+            cliTarReader.close()
+
+            print('Process completed.')
+            print()
+
+            self.showCLIMenu()
+
+
+        elif cmdInput == '3':
+            templates = [template[:-5] for template in os.listdir('templates/') if template != 'TEMPLATES_DIRECTORY']
+            if len(templates) > 0:
+                print('Please select the template:')
+                for i in range(0, len(templates)):
+                    print(str(i+1) + '> ' + templates[i])
+                print('0> Back')
+
+                cmdInput = ''
+                while not cmdInput in [str(j) for j in range(0, len(templates)+1)]:
+                    cmdInput = input('> ')
+
+                if cmdInput == '0':
+                    print()
+                    self.showCLIMenu()
+                else:
+                    self.useTemplateCLI(templates[int(cmdInput)-1])
+
+                print()
+                self.showCLIMenu()
+
+            else:
+                print('No templates found.\n')
+                self.showCLIMenu()
+
+
+        elif cmdInput == '4':
+            print(('Backup Machine v.' + appInfo._VERSION.value).center(32))
+            print('Developer: thm'.center(32))
+            print('highsierra.2007@mail.ru'.center(32))
+            print('https://thm-unix.github.io'.center(32))
+            print()
+            self.showCLIMenu()
+
+        elif cmdInput == '5':
+            exit()
+
+
     def useTemplateCLI(self, templatePath):
         templatePath = 'templates/' + templatePath + '.json'
         if os.path.exists(templatePath):
@@ -344,7 +496,7 @@ class App(QWidget):
 
     def init(self):
         myArgs = sys.argv
-        print('Args: ' + ' '.join(myArgs))
+        # print('Args: ' + ' '.join(myArgs))
 
         if '-service' in myArgs:
             if '-template' in myArgs:
@@ -358,6 +510,8 @@ class App(QWidget):
                 print('Lack of arguments.')
                 exit()
 
+        if '-cli' in myArgs:
+            self.showCLIMenu()
 
         # Read config.json
         try:
@@ -366,7 +520,7 @@ class App(QWidget):
         except:  # failsafe
             QMessageBox.critical(self, 'Backup Machine', 'Bad syntax or absence of config.json. Using failsafe configuration.', QMessageBox.Ok)
             self.config = { 'theme': 'light',
-                            'locale': 'us',
+                            'locale': 'en',
                             'bgrObject': 'assets/background.jpg' }
 
 
