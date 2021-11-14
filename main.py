@@ -31,9 +31,6 @@ class App(QWidget):
         super().__init__()
         self.init()
 
-    def setTemplateProgress(self):
-        self.useTemplateWindow.progressBar.setValue(self.percentsCompleted)
-
     def eventHandler(self, form, object, info):
         if form == 'entryPoint':
             if object == 'aboutSoftwarePushButton':
