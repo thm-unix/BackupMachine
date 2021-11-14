@@ -8,7 +8,7 @@ import datetime
 from enum import Enum
 from collections import deque
 from PyQt5.QtWidgets import QApplication, QWidget, QFileDialog, QMessageBox
-from PyQt5.QtCore import QThread
+from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
 
@@ -21,7 +21,7 @@ os.chdir(main_dir)
 class appInfo(Enum):
     _DEVELOPER = 'thm'
     _APPNAME   = 'Backup Machine'
-    _VERSION   = '0.2.1'
+    _VERSION   = '0.2.2'
     _CONTACT   = 'highsierra.2007@mail.ru'
     _WEBSITE   = 'https://thm-unix.github.io/'
 
@@ -30,6 +30,9 @@ class App(QWidget):
     def __init__(self):
         super().__init__()
         self.init()
+
+    def setTemplateProgress(self):
+        self.useTemplateWindow.progressBar.setValue(self.percentsCompleted)
 
     def eventHandler(self, form, object, info):
         if form == 'entryPoint':
@@ -165,12 +168,15 @@ class App(QWidget):
                         self.filesQueue.popleft()
 
                         self.percentsCompleted = (self.completedItems * 100) // self.countItems
+                        self.saveBackupWindow.progressBar.setValue(self.percentsCompleted)
                         print(str(self.percentsCompleted) + '%')
 
                     tarWriter.close()
                     print('Process completed.')
                     self.saveBackupWindow.hide()
                     self.completionWindow.show()
+
+                    self.saveBackupWindow.progressBar.setValue(0)
 
                     self.completionWindow.completedSuccessfullyLabel.setText(self.completionWindow.completedSuccessfullyLabel.text() + self.backupSavePath)
                 else:
@@ -200,10 +206,15 @@ class App(QWidget):
                 self.entryPoint.show()
             elif object == 'startPushButton':
                 if self.restoreWindow.tarPathLineEdit.text() and self.restoreWindow.unpackPathLineEdit.text():
+                    self.completedItems = 0
+
                     self.restoreWindow.restoreTitleLabel.setText(self.txtData['restoreProgressTitleLabel'])
                     self.restoreWindow.setWindowTitle(self.txtData['restorePleaseWait'])
 
                     tarReader = tarfile.open(self.tarFileToRestorePath)
+
+                    # we still cannot track progress of this process.
+                    # the problem is we can't extract one file at one time.
                     tarReader.extractall(self.restoreDirectory)
                     tarReader.close()
 
@@ -220,6 +231,8 @@ class App(QWidget):
                 self.entryPoint.show()
             elif object == 'startPushButton':
                 if self.useTemplateWindow.templatesListView.currentItem():
+                    self.percentsCompleted = 0
+
                     self.useTemplateWindow.useTemplateTitleLabel.setText(self.txtData['progressTitleLabel'])
 
                     self.currentTemplateName = self.useTemplateWindow.templatesListView.currentItem().text() + '.json'
@@ -250,12 +263,15 @@ class App(QWidget):
                         self.templateFilesQueue.popleft()
 
                         self.percentsCompleted = (self.completedItems * 100) // self.templateCountItems
+                        self.useTemplateWindow.progressBar.setValue(self.percentsCompleted)
                         print(str(self.percentsCompleted) + '%')
 
                     tarWriter.close()
                     print('Process completed.')
                     self.completionWindow.completedSuccessfullyLabel.setText(self.completionWindow.completedSuccessfullyLabel.text() + os.path.join(self.templateBackupPath, self.templateBackupFilename))
                     self.useTemplateWindow.hide()
+
+                    self.useTemplateWindow.progressBar.setValue(0)
                     self.completionWindow.show()
             else:
                 print('Unknown object ' + object + ' on form ' + form + ' (report this!)')
@@ -412,6 +428,9 @@ class App(QWidget):
             cliUnpackPath = cmdInput
 
             cliTarReader = tarfile.open(cliTarFilename)
+
+            # we still cannot track progress of this process.
+            # the problem is we can't extract one file at one time.
             cliTarReader.extractall(cliUnpackPath)
             cliTarReader.close()
 
